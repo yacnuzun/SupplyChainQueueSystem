@@ -1,15 +1,15 @@
-﻿using BillApi.Bussiness.Interfaces;
+﻿using BillApi.Application.Services.Interfaces;
+using BillApi.Domain.Entities;
 using BillApi.Dto_s;
-using BillApi.Entities;
-using BillApi.Entities.DbConnectionContext;
-using BillApi.Repositories.Interfaces;
+using BillApi.Infrastructure.Data.DbConnectionContext;
+using BillApi.Infrastructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shared.Constant;
 using Shared.Helpers.ResponseModels.GenericResultModels;
 using Shared.Persistance.Interfaces;
 using IResult = Shared.Helpers.ResponseModels.GenericResultModels.IResult;
 
-namespace BillApi.Bussiness.Implemantations
+namespace BillApi.Application.Services.Implemantations
 {
     public class BillManager : IBillService
     {

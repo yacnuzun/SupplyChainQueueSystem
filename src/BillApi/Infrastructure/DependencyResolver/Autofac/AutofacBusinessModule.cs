@@ -1,15 +1,15 @@
 ﻿using Autofac;
-using BillApi.Bussiness.Implemantations;
-using BillApi.Bussiness.Interfaces;
-using BillApi.Entities.DbConnectionContext;
-using BillApi.Repositories.Implemantations;
-using BillApi.Repositories.Interfaces;
+using BillApi.Application.Services.Implemantations;
+using BillApi.Application.Services.Interfaces;
+using BillApi.Infrastructure.Data.DbConnectionContext;
+using BillApi.Infrastructure.Repositories.Implemantations;
+using BillApi.Infrastructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shared.Persistance.Entities;
 using Shared.Persistance.Implamantations;
 using Shared.Persistance.Interfaces;
 
-namespace BillApi.DependencyResolver.Autofac
+namespace BillApi.Infrastructure.DependencyResolver.Autofac
 {
     public class AutofacBusinessModule : Module
     {
@@ -19,6 +19,7 @@ namespace BillApi.DependencyResolver.Autofac
             builder.RegisterType<BillManager>().As<IBillService>();
             builder.RegisterType<EfBillRepository>().As<IBillRepository>();
             builder.RegisterType<EfUnitOfWork<BillDbContext>>().As<IUnitOfWork>();
+            
             builder.Register(context =>
             {
                 var configuration = context.Resolve<IConfiguration>();
@@ -29,8 +30,8 @@ namespace BillApi.DependencyResolver.Autofac
             })
 .AsSelf()
 .InstancePerLifetimeScope();
-            builder.RegisterType<BillDbContext>().AsSelf().InstancePerLifetimeScope();
             
+
 
         }
     }

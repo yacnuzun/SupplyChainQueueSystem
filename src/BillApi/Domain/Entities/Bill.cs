@@ -1,6 +1,6 @@
 ﻿using Shared.Persistance.Entities;
 
-namespace BillApi.Entities
+namespace BillApi.Domain.Entities
 {
     public class Bill : IEntity
     {

@@ -1,16 +1,16 @@
-using BillApi.Bussiness.Interfaces;
+using BillApi.Application.Services.Interfaces;
 using BillApi.Dto_s;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Constant;
 
-namespace BillApi.Controllers
+namespace BillApi.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class BillController : ControllerBase
     {
-        readonly IBillService _billService;
+        private readonly IBillService _billService;
 
         public BillController(IBillService billService)
         {
@@ -25,7 +25,7 @@ namespace BillApi.Controllers
 
             return Ok(result.Data);
         }
-        
+
         [HttpPost("paymentarequest")]
         [Authorize]
         public async Task<IActionResult> PaymentRequest(PaymentRequestControllerDto dto)
@@ -34,7 +34,7 @@ namespace BillApi.Controllers
 
             return Ok(result.Data);
         }
-        
+
         [HttpGet("paymentresponse")]
         public async Task<IActionResult> PaymentResponse(string invoiceNumber)
         {
@@ -42,7 +42,7 @@ namespace BillApi.Controllers
 
             return Ok(result.Success);
         }
-        
+
         [HttpGet("getbillbuyer")]
         [Authorize]
         public async Task<IActionResult> GetBillBuyer(string buyerTaxId)
@@ -61,7 +61,8 @@ namespace BillApi.Controllers
             return Ok(result.Data);
         }
         [HttpGet]
-        public ActionResult GetBillPayment() {
+        public ActionResult GetBillPayment()
+        {
             return Ok(TokenValidate.TokenOptionValidate());
         }
     }

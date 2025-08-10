@@ -1,4 +1,4 @@
-﻿using BillApi.Entities;
+﻿using BillApi.Domain.Entities;
 using Shared.Abstract;
 
 namespace BillApi.Dto_s

@@ -2,7 +2,7 @@
 using Shared.Helpers.ResponseModels.GenericResultModels;
 using IResult = Shared.Helpers.ResponseModels.GenericResultModels.IResult;
 
-namespace BillApi.Bussiness.Interfaces
+namespace BillApi.Application.Services.Interfaces
 {
     public interface IBillService
     {
