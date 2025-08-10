@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Shared.Helpers.Security.Encryption;
 using BillApi.Entities.DbConnectionContext;
 using Microsoft.EntityFrameworkCore;
+using Shared.Constant;
 
 namespace BillApi
 {
@@ -59,7 +60,7 @@ namespace BillApi
             o.UseNpgsql(ConnectionStringConstant.ConnectionString));
 
             var tokenOptions = configurationManager.GetSection("TokenOptions").Get<TokenOptions>();
-
+            TokenValidate.CustomerOptions = tokenOptions;
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                             .AddJwtBearer(options =>
                             {

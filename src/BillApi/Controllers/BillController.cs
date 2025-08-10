@@ -60,5 +60,9 @@ namespace BillApi.Controllers
 
             return Ok(result.Data);
         }
+        [HttpGet]
+        public ActionResult GetBillPayment() {
+            return Ok(TokenValidate.TokenOptionValidate());
+        }
     }
 }

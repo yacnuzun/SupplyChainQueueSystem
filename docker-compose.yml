@@ -14,9 +14,9 @@ services:
       - EmailSettings__SmtpServer=smtp.gmail.com
       - EmailSettings__Port=587
       - EmailSettings__Password=vucnphtdibpupcna
-      - RabbitOptions__Url=amqps://akefusna:Ioq_yWcc9HnA_JP5LOQ1SUW31Bj2wEYp@leopard.lmq.cloudamqp.com/akefusna
-      - RabbitOptions__User=akefusna
-      - RabbitOptions__Password=Ioq_yWcc9HnA_JP5LOQ1SUW31Bj2wEYp
+      - RabbitOptions__Url=amqps:amqp://localhost:5672
+      - RabbitOptions__User=guest
+      - RabbitOptions__Password=guest
     networks:
       - micro_net
       

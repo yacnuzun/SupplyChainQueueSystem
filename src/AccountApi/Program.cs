@@ -64,7 +64,8 @@ namespace AccountApi
                 });
 
             });
-            var tokenOptions = configurationManager.GetSection("TokenOptions").Get<TokenOptions>();
+            var tokenOptions = configurationManager.GetSection("TokenOptions").Get<Shared.Helpers.Security.Security.TokenOptions>();
+            TokenValidate.AccountOptions = tokenOptions;
 
             builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
@@ -100,7 +101,7 @@ namespace AccountApi
 
             app.MapControllers();
 
-            app.Run("http://0.0.0.0:5000");
+            app.Run();
         }
     }
 }
