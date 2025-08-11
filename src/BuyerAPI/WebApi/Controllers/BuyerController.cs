@@ -1,11 +1,11 @@
+using BuyerAPI.Domain.Entities;
 using BuyerAPI.Dto_s;
-using BuyerAPI.Entities;
-using BuyerAPI.Repositories.Interfaces;
+using BuyerAPI.Infrastructure.Repositories.Interfaces;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BuyerAPI.Controllers
+namespace BuyerAPI.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]

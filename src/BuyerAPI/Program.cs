@@ -2,8 +2,8 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using BuyerAPI.Constants;
-using BuyerAPI.Consumer;
-using BuyerAPI.DependencyResolver.AutofacHelper;
+using BuyerAPI.Infrastructure.DependencyResolver.AutofacHelper;
+using BuyerAPI.Infrastructure.Consumer;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -24,7 +24,6 @@ namespace BuyerAPI
             // Add services to the container.
             ConfigurationManager configurationManager = builder.Configuration;
 
-            ConnectionStringConstant.ConnectionString = configurationManager.GetSection("DbConnection:ConnectionString").Value;
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,4 +1,4 @@
-﻿namespace BuyerAPI.Entities
+﻿namespace BuyerAPI.Domain.Entities
 {
     public enum Status
     {

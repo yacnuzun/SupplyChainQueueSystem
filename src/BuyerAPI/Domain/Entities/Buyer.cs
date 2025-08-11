@@ -1,6 +1,6 @@
 ﻿using Shared.Persistance.Entities;
 
-namespace BuyerAPI.Entities
+namespace BuyerAPI.Domain.Entities
 {
     public class Buyer : IEntity
     {

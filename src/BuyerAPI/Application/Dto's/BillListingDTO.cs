@@ -1,4 +1,4 @@
-﻿using BuyerAPI.Entities;
+﻿using BuyerAPI.Domain.Entities;
 using Shared.Abstract;
 
 namespace BuyerAPI.Dto_s

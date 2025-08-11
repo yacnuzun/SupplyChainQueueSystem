@@ -3,7 +3,7 @@ using Shared.Dto_s;
 using Shared.Events;
 using Shared.Helpers.ResponseModels.GenericResultModels;
 
-namespace BuyerAPI.Repositories.Interfaces
+namespace BuyerAPI.Infrastructure.Repositories.Interfaces
 {
     public interface IBuyerHelper
     {

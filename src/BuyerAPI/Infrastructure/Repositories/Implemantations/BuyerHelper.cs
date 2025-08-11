@@ -1,6 +1,6 @@
-﻿using BuyerAPI.Dto_s;
-using BuyerAPI.Entities;
-using BuyerAPI.Repositories.Interfaces;
+﻿using BuyerAPI.Domain.Entities;
+using BuyerAPI.Dto_s;
+using BuyerAPI.Infrastructure.Repositories.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shared.Constant;
@@ -9,7 +9,7 @@ using Shared.Events;
 using Shared.Helpers.ResponseModels.GenericResultModels;
 using System.Net.Http.Headers;
 
-namespace BuyerAPI.Repositories.Implemantations
+namespace BuyerAPI.Infrastructure.Repositories.Implemantations
 {
     public class BuyerHelper : IBuyerHelper
     {
@@ -18,11 +18,11 @@ namespace BuyerAPI.Repositories.Implemantations
 
         public async Task<IDataResult<JwtDto>> CheckUser(string token)
         {
-            var headerAutho = new AuthenticationHeaderValue("Bearer", token.Replace("Bearer ",""));
-            
+            var headerAutho = new AuthenticationHeaderValue("Bearer", token.Replace("Bearer ", ""));
+
             client.DefaultRequestHeaders.Authorization = headerAutho;
 
-            var request = await client.PostAsJsonAsync("https://localhost:44340/Account/loginAcces", new UserForLoginAccessDto { Role = role });
+            var request = await client.PostAsJsonAsync("https://localhost:7067/Account/loginAcces", new UserForLoginAccessDto { Role = role });
 
             if (!request.IsSuccessStatusCode)
             {
@@ -38,7 +38,7 @@ namespace BuyerAPI.Repositories.Implemantations
                 return new ErrorDataResult<JwtDto>(Messages.FailedProccess);
             }
 
-            return new SuccessDataResult<JwtDto>(success,Messages.SuccessProccess);
+            return new SuccessDataResult<JwtDto>(success, Messages.SuccessProccess);
         }
 
         public async Task<BillEvent> CreateABill(CreateBillDTO dto, string token)
@@ -82,7 +82,7 @@ namespace BuyerAPI.Repositories.Implemantations
             }
 
             return new SuccessDataResult<List<BillListingDTO>>(request);
-            
+
         }
     }
 }

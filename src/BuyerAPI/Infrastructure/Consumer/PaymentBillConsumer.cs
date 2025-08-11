@@ -1,11 +1,11 @@
 ﻿using MassTransit;
 using Shared.Events;
 
-namespace BuyerAPI.Consumer
+namespace BuyerAPI.Infrastructure.Consumer
 {
     public class PaymentBillConsumer : IConsumer<EarlyPaymentEvent>
     {
-        
+
         public async Task Consume(ConsumeContext<EarlyPaymentEvent> context)
         {
 
