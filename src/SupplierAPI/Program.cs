@@ -10,10 +10,10 @@ using Shared.Constant;
 using Shared.Helpers.Security.Encryption;
 using Shared.Helpers.Security.Security;
 using SupplierAPI.Constants;
-using SupplierAPI.Consumer;
 using SupplierAPI.DependencyResolver.AutofacHelper;
 using SupplierAPI.Extensions;
 using SupplierAPI.Helpers.Quartz;
+using SupplierAPI.Infrastructure.Consumer;
 
 namespace SupplierAPI
 {
