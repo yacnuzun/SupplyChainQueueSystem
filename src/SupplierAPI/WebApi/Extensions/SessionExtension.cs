@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SupplierAPI.Extensions
+namespace SupplierAPI.WebApi.Extensions
 {
     public static class ServiceTool
     {

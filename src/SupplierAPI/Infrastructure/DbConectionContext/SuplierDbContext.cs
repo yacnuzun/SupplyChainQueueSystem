@@ -2,14 +2,11 @@
 using SupplierAPI.Constants;
 using SupplierAPI.Domain.Entities;
 
-namespace SupplierAPI.Domain.Entities.DbConectionContext
+namespace SupplierAPI.Infrastructure.DbConectionContext
 {
     public class SuplierDbContext : DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(ConnectionStringConstant.ConnectionString);
-        }
+        public SuplierDbContext(DbContextOptions dbContextOptions):base(dbContextOptions) { }
 
         public DbSet<Supplier> Suppliers { get; set; }
 

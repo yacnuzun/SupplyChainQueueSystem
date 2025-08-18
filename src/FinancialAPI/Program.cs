@@ -1,7 +1,7 @@
 
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using FinancialAPI.DependencyResolver.AutofacHelper;
+using FinancialAPI.Infrastructure.DependencyResolver.AutofacHelper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Helpers.Security.Encryption;
