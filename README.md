@@ -101,4 +101,41 @@
 
 - MailKit kullanılmaktadır, appsettings.json üzerinden SMTP ayarları yapılabilir.
 
+✅ Docker container eklendi (Commit: 58be5dd5, 2025-08-30)
+
+
+### 🚀 Yeni Eklenenler
+- [2025-08-30] Docker Container Eklendi.
+
+
+## 🛣️ Roadmap
+
+Proje halen geliştirme aşamasındadır. Süreç şeffaf bir şekilde commit geçmişi üzerinden takip edilebilir.  
+Gelecek adımlar aşağıdaki gibi planlanmıştır:
+
+- [x] Mikroservis yapısının kurulması  
+- [x] RabbitMQ entegrasyonu  
+- [x] Dockerfile ve docker-compose yapılandırmaları  
+- [ ] Authentication (JWT + role-based authorization)  
+- [ ] CI/CD pipeline entegrasyonu  
+- [ ] Test coverage oranının artırılması 
+
+## 🐳 Docker Teknik Detayları
+
+Projede her mikroservis için ayrı bir **Dockerfile** oluşturulmuştur.  
+Ayrıca `docker-compose.yml` ile tüm servisler aynı anda ayağa kaldırılabilmektedir.  
+
+### Yapılan Düzenlemeler
+- `Dockerfile` → Her servis için publish edilen `.dll` dosyaları Kestrel üzerinde çalışacak şekilde yapılandırıldı.  
+- `docker-compose.yml` → RabbitMQ servisi ve mikroservisler aynı network üzerinde tanımlandı.  
+- `.dockerignore` → Gereksiz dosyaların (bin, obj, user secrets vb.) imaja dahil edilmesi engellendi.  
+- Kestrel URL ayarları güncellendi (örn: `http://+:5001`).  
+
+### Çalışan Servisler (docker-compose)
+- **AccountApi** → `http://localhost:5001`  
+- **BillApi** → `http://localhost:5002`  
+- **BuyerApi** → `http://localhost:5003`  
+- **FinancialApi** → `http://localhost:5004`  
+- **SupplierApi** → `http://localhost:5005`  
+- **RabbitMQ Management UI** → `http://localhost:15672` (user: guest / pass: guest)  
 
