@@ -10,7 +10,7 @@ namespace FinancialAPI.Infrastructure.Repositories.Implemantations
         private static HttpClient client = new HttpClient();
         public async Task<IResult> EarlypPaymentRequest(string invoiceNumber)
         {
-            var request = await client.GetFromJsonAsync<bool>("https://localhost:7221/bill/paymentresponse?invoiceNumber=" + invoiceNumber);
+            var request = await client.GetFromJsonAsync<bool>("http://localhost:5001/bill/paymentresponse?invoiceNumber=" + invoiceNumber);
 
             if (!request)
             {

@@ -9,11 +9,11 @@ using Quartz;
 using Shared.Constant;
 using Shared.Helpers.Security.Encryption;
 using Shared.Helpers.Security.Security;
-using SupplierAPI.Constants;
 using SupplierAPI.Infrastructure.DependencyResolver.AutofacHelper;
 using SupplierAPI.Infrastructure.Consumer;
 using SupplierAPI.Infrastructure.Background.Quartz;
 using SupplierAPI.WebApi.Extensions;
+using System.Security.Claims;
 
 namespace SupplierAPI
 {
@@ -86,7 +86,8 @@ namespace SupplierAPI
                                     ValidIssuer = tokenOptions.Issuer,
                                     ValidAudience = tokenOptions.Audience,
                                     ValidateIssuerSigningKey = true,
-                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
+                                    RoleClaimType = ClaimTypes.Role
                                 };
                             });
            
@@ -119,7 +120,7 @@ namespace SupplierAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
 

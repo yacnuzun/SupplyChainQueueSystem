@@ -17,6 +17,7 @@ using Shared.Constant;
 using Shared.Events;
 using AccountApi.WebApi.Configuration;
 using Autofac.Core;
+using System.Security.Claims;
 
 namespace AccountApi
 {
@@ -70,7 +71,6 @@ namespace AccountApi
             builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
             builder.Services.AddRabbitMqWithDLX(builder.Configuration);
-
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                             .AddJwtBearer(options =>
                             {
@@ -82,7 +82,8 @@ namespace AccountApi
                                     ValidIssuer = tokenOptions.Issuer,
                                     ValidAudience = tokenOptions.Audience,
                                     ValidateIssuerSigningKey = true,
-                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
+                                    RoleClaimType = ClaimTypes.Role
                                 };
                             });
             var app = builder.Build();
@@ -94,10 +95,9 @@ namespace AccountApi
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

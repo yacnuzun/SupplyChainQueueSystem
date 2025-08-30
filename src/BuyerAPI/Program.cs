@@ -1,7 +1,6 @@
 
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using BuyerAPI.Constants;
 using BuyerAPI.Infrastructure.DependencyResolver.AutofacHelper;
 using BuyerAPI.Infrastructure.Consumer;
 using MassTransit;
@@ -12,6 +11,7 @@ using Shared.Constant;
 using Shared.Events;
 using Shared.Helpers.Security.Encryption;
 using Shared.Helpers.Security.Security;
+using System.Security.Claims;
 
 namespace BuyerAPI
 {
@@ -72,7 +72,8 @@ namespace BuyerAPI
                                     ValidIssuer = tokenOptions.Issuer,
                                     ValidAudience = tokenOptions.Audience,
                                     ValidateIssuerSigningKey = true,
-                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
+                                    RoleClaimType = ClaimTypes.Role
                                 };
                             });
 
@@ -104,7 +105,9 @@ namespace BuyerAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

@@ -4,7 +4,8 @@ services:
       context: ./src
       dockerfile: AccountApi/WebApi/Dockerfile
     ports:
-      - "5000:5000"
+      - "8081:5000"
+      - "8082:8080"
     volumes:
       - ./secret.json:/app/secret.json:ro
     environment:
@@ -14,12 +15,101 @@ services:
       - EmailSettings__SmtpServer=smtp.gmail.com
       - EmailSettings__Port=587
       - EmailSettings__Password=vucnphtdibpupcna
-      - RabbitOptions__Url=amqps:amqp://localhost:5672
+      - RabbitOptions__Url=amqp://localhost:5672
       - RabbitOptions__User=guest
       - RabbitOptions__Password=guest
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
     networks:
       - micro_net
-      
+  billapi:
+    build:
+      context: ./src
+      dockerfile: BillApi/WebApi/Dockerfile
+    ports:
+      - "8083:5001"
+    volumes:
+      - ./secret.json:/app/secret.json:ro
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DbConnection__ConnectionString=Host=host.docker.internal;Port=5433;Database=billdb;Username=postgres;Password=123456
+      - ASPNETCORE_URLS=http://0.0.0.0:5001
+    networks:
+      - micro_net    
+  buyerapi:
+    build:
+      context: ./src
+      dockerfile: BuyerApi/WebApi/Dockerfile
+    ports:
+      - "8084:5002"
+    volumes:
+      - ./secret.json:/app/secret.json:ro
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DbConnection__ConnectionString=Host=host.docker.internal;Port=5433;Database=buyerdb;Username=postgres;Password=123456
+      - EmailSettings__SenderMail=yalcin.zn96@gmail.com
+      - EmailSettings__SmtpServer=smtp.gmail.com
+      - EmailSettings__Port=587
+      - EmailSettings__Password=vucnphtdibpupcna
+      - RabbitOptions__Url=amqp://localhost:5672
+      - RabbitOptions__User=guest
+      - RabbitOptions__Password=guest
+      - ASPNETCORE_URLS=http://0.0.0.0:5002
+    networks:
+      - micro_net
+  financialapi:
+    build:
+      context: ./src
+      dockerfile: FinancialApi/WebApi/Dockerfile
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./secret.json:/app/secret.json:ro
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
+    networks:
+      - micro_net
+  supplierapi:
+    build:
+      context: ./src
+      dockerfile: SupplierApi/WebApi/Dockerfile
+    ports:
+      - "8086:5004"
+    volumes:
+      - ./secret.json:/app/secret.json:ro
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DbConnection__ConnectionString=Host=host.docker.internal;Port=5433;Database=supplierdb;Username=postgres;Password=123456
+      - EmailSettings__SenderMail=yalcin.zn96@gmail.com
+      - EmailSettings__SmtpServer=smtp.gmail.com
+      - EmailSettings__Port=587
+      - EmailSettings__Password=vucnphtdibpupcna
+      - RabbitOptions__Url=amqp://localhost:5672
+      - RabbitOptions__User=guest
+      - RabbitOptions__Password=guest
+      - ASPNETCORE_URLS=http://0.0.0.0:5004
+    networks:
+      - micro_net
+
+  postgresdb:
+    image: postgres:15
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: userdb,billdb,buyerdb,supplierdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
+    networks:
+      - micro_net
+ 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - micro_net
+
 
 networks:
   micro_net:
