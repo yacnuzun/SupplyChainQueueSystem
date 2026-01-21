@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SupplierAPI.Constants;
 using SupplierAPI.Domain.Entities;
 
 namespace SupplierAPI.Infrastructure.DbConectionContext

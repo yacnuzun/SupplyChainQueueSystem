@@ -16,31 +16,6 @@ namespace BuyerAPI.Infrastructure.Repositories.Implemantations
         private static HttpClient client = new HttpClient();
         private string role = nameof(Buyer);
 
-        public async Task<IDataResult<JwtDto>> CheckUser(string token)
-        {
-            var headerAutho = new AuthenticationHeaderValue("Bearer", token.Replace("Bearer ", ""));
-
-            client.DefaultRequestHeaders.Authorization = headerAutho;
-
-            var request = await client.PostAsJsonAsync("https://localhost:7067/Account/loginAcces", new UserForLoginAccessDto { Role = role });
-
-            if (!request.IsSuccessStatusCode)
-            {
-                return new ErrorDataResult<JwtDto>(Messages.FailedProccess);
-            }
-
-            string response = await request.Content.ReadAsStringAsync();
-
-            JwtDto success = JsonConvert.DeserializeObject<JwtDto>(response);
-
-            if (success is null)
-            {
-                return new ErrorDataResult<JwtDto>(Messages.FailedProccess);
-            }
-
-            return new SuccessDataResult<JwtDto>(success, Messages.SuccessProccess);
-        }
-
         public async Task<BillEvent> CreateABill(CreateBillDTO dto, string token)
         {
             var headerAutho = new AuthenticationHeaderValue("Bearer", token.Replace("Bearer ", ""));
@@ -73,8 +48,6 @@ namespace BuyerAPI.Infrastructure.Repositories.Implemantations
             client.DefaultRequestHeaders.Authorization = headerAutho;
 
             var request = await client.GetFromJsonAsync<List<BillListingDTO>>("https://localhost:7221/bill/getbillbuyer?buyerTaxId=" + buyerTaxId);
-
-            //var response = JsonConvert.DeserializeObject<IDataResult<List<BillListingDTO>>>(request);
 
             if (request is null)
             {

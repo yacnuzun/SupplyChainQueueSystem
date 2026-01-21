@@ -18,7 +18,7 @@ namespace BillApi.WebApi.Controllers
         }
 
         [HttpPost("createabill")]
-        [Authorize]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> CreateABill(CreateBillDTO dto)
         {
             var result = await _billService.CreateABill(dto);
@@ -26,8 +26,8 @@ namespace BillApi.WebApi.Controllers
             return Ok(result.Data);
         }
 
+        [Authorize(Roles = "Supplier")]
         [HttpPost("paymentarequest")]
-        [Authorize]
         public async Task<IActionResult> PaymentRequest(PaymentRequestControllerDto dto)
         {
             var result = await _billService.CreatePaymentRequest(dto.InvoiceNumber);
@@ -44,7 +44,7 @@ namespace BillApi.WebApi.Controllers
         }
 
         [HttpGet("getbillbuyer")]
-        [Authorize]
+        [Authorize(Roles = "Buyer")]
         public async Task<IActionResult> GetBillBuyer(string buyerTaxId)
         {
             var result = await _billService.GetBillDtowithBuyerID(buyerTaxId);
@@ -52,8 +52,8 @@ namespace BillApi.WebApi.Controllers
             return Ok(result.Data);
         }
 
+        [Authorize(Roles = "Supplier")]
         [HttpGet("getbillsupplier")]
-        [Authorize]
         public async Task<IActionResult> GetBillSupplier(string supplierTaxId)
         {
             var result = await _billService.GetBillDtowithSupplierID(supplierTaxId);

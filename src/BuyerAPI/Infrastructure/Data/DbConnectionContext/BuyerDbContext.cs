@@ -1,5 +1,4 @@
-﻿using BuyerAPI.Constants;
-using BuyerAPI.Domain.Entities;
+﻿using BuyerAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BuyerAPI.Infrastructure.Data.DbConnectionContext
