@@ -54,6 +54,7 @@ namespace AccountApi.Infrastructure.DependencyResolver.AutofacHelper
 
             #region validators
             builder.RegisterType<ClaimValidator>().As<IValidator<ClaimDto>>().InstancePerLifetimeScope();
+            builder.RegisterType<UserClaimValidator>().As<IValidator<UserClaimDto>>().InstancePerLifetimeScope();
             builder.RegisterType<RegisterUserValidator>().As<IValidator<UserForRegisterDto>>().InstancePerLifetimeScope();
             builder.RegisterType<TemplateAddValidator>().As<IValidator<TemplateAddDto>>().InstancePerLifetimeScope();
             builder.RegisterType<TemplateUpdateValidator>().As<IValidator<TemplateUpdateDto>>().InstancePerLifetimeScope();

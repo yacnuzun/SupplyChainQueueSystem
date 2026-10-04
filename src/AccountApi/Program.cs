@@ -17,6 +17,7 @@ using Shared.Constant;
 using Shared.Events;
 using AccountApi.WebApi.Configuration;
 using Autofac.Core;
+using System.Security.Claims;
 
 namespace AccountApi
 {
@@ -64,12 +65,12 @@ namespace AccountApi
                 });
 
             });
-            var tokenOptions = configurationManager.GetSection("TokenOptions").Get<TokenOptions>();
+            var tokenOptions = configurationManager.GetSection("TokenOptions").Get<Shared.Helpers.Security.Security.TokenOptions>();
+            TokenValidate.AccountOptions = tokenOptions;
 
             builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
             builder.Services.AddRabbitMqWithDLX(builder.Configuration);
-
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                             .AddJwtBearer(options =>
                             {
@@ -81,7 +82,8 @@ namespace AccountApi
                                     ValidIssuer = tokenOptions.Issuer,
                                     ValidAudience = tokenOptions.Audience,
                                     ValidateIssuerSigningKey = true,
-                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
+                                    RoleClaimType = ClaimTypes.Role
                                 };
                             });
             var app = builder.Build();
@@ -93,14 +95,13 @@ namespace AccountApi
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
-            app.Run("http://0.0.0.0:5000");
+            app.Run();
         }
     }
 }

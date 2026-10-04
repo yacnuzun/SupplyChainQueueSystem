@@ -1,16 +1,16 @@
 
 using Autofac.Extensions.DependencyInjection;
 using Autofac;
-using BillApi.DependencyResolver.Autofac;
-using BillApi.Constants;
+using BillApi.Infrastructure.DependencyResolver.Autofac;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using Shared.Helpers.Security.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Helpers.Security.Encryption;
-using BillApi.Entities.DbConnectionContext;
 using Microsoft.EntityFrameworkCore;
+using Shared.Constant;
+using BillApi.Infrastructure.Data.DbConnectionContext;
 
 namespace BillApi
 {
@@ -22,7 +22,6 @@ namespace BillApi
             ConfigurationManager configurationManager = builder.Configuration;
             // Add services to the container.
 
-            ConnectionStringConstant.ConnectionString = configurationManager.GetSection("DbConnection:ConnectionString").Value;
 
 
             builder.Services.AddControllers();
@@ -55,11 +54,8 @@ namespace BillApi
 
             });
             
-            builder.Services.AddDbContext<BillDbContext>(o =>
-            o.UseNpgsql(ConnectionStringConstant.ConnectionString));
-
             var tokenOptions = configurationManager.GetSection("TokenOptions").Get<TokenOptions>();
-
+            TokenValidate.CustomerOptions = tokenOptions;
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                             .AddJwtBearer(options =>
                             {
@@ -87,7 +83,7 @@ namespace BillApi
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 

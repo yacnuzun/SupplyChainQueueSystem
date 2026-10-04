@@ -5,6 +5,7 @@ using AccountApi.Application.Services.Interfaces;
 using AccountApi.Domain.Entities;
 using AccountApi.Infrastructure.Repositories.Interfaces;
 using AccountApi.Domain.Enums;
+using AccountApi.Dto_s;
 
 namespace AccountApi.Application.Services.Implementations
 {
@@ -21,11 +22,12 @@ namespace AccountApi.Application.Services.Implementations
             _logger = logger;
         }
 
-        public async Task<IResult> AddAsync(UserOperationClaim userOperationClaim)
+        public async Task<IResult> AddAsync(UserClaimDto userOperationClaim)
         {
             try
             {
-                await _userClaimRepository.AddAsync(userOperationClaim);
+                var userOperationClaimEntity = new UserOperationClaim { OperationClaimId = ((int)userOperationClaim.Role), UserId = userOperationClaim.UserId };
+                await _userClaimRepository.AddAsync(userOperationClaimEntity);
                 var result = await _unitOfWork.CommitAsync();
                 if (result < 0)
                 {

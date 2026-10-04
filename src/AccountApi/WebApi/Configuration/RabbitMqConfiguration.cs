@@ -15,7 +15,7 @@ namespace AccountApi.WebApi.Configuration
 
             services.AddMassTransit(x =>
                 {
-                    x.SetKebabCaseEndpointNameFormatter();
+                    //x.SetKebabCaseEndpointNameFormatter();
 
                     x.AddConsumer<UserRegisteredConsumer>();
                     x.AddConsumer<UserRegistrationFailedConsumer>();
@@ -46,10 +46,12 @@ namespace AccountApi.WebApi.Configuration
 
                         });
 
-                        cfg.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter("accountapi", false));
+                        //cfg.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter("accountapi", false));
+                        
 
                     });
                 });
+            services.AddHealthChecks();
         }
     }
 

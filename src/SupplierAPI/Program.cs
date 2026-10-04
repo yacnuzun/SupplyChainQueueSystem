@@ -9,11 +9,11 @@ using Quartz;
 using Shared.Constant;
 using Shared.Helpers.Security.Encryption;
 using Shared.Helpers.Security.Security;
-using SupplierAPI.Constants;
-using SupplierAPI.Consumer;
-using SupplierAPI.DependencyResolver.AutofacHelper;
-using SupplierAPI.Extensions;
-using SupplierAPI.Helpers.Quartz;
+using SupplierAPI.Infrastructure.DependencyResolver.AutofacHelper;
+using SupplierAPI.Infrastructure.Consumer;
+using SupplierAPI.Infrastructure.Background.Quartz;
+using SupplierAPI.WebApi.Extensions;
+using System.Security.Claims;
 
 namespace SupplierAPI
 {
@@ -24,7 +24,6 @@ namespace SupplierAPI
             var builder = WebApplication.CreateBuilder(args);
             ConfigurationManager configurationManager = builder.Configuration;
 
-            ConnectionStringConstant.ConnectionString = configurationManager.GetSection("DbConnection:ConnectionString").Value;
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllers();
@@ -87,7 +86,8 @@ namespace SupplierAPI
                                     ValidIssuer = tokenOptions.Issuer,
                                     ValidAudience = tokenOptions.Audience,
                                     ValidateIssuerSigningKey = true,
-                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
+                                    RoleClaimType = ClaimTypes.Role
                                 };
                             });
            
@@ -120,7 +120,7 @@ namespace SupplierAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
 

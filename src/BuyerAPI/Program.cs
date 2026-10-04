@@ -1,9 +1,8 @@
 
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using BuyerAPI.Constants;
-using BuyerAPI.Consumer;
-using BuyerAPI.DependencyResolver.AutofacHelper;
+using BuyerAPI.Infrastructure.DependencyResolver.AutofacHelper;
+using BuyerAPI.Infrastructure.Consumer;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +11,7 @@ using Shared.Constant;
 using Shared.Events;
 using Shared.Helpers.Security.Encryption;
 using Shared.Helpers.Security.Security;
+using System.Security.Claims;
 
 namespace BuyerAPI
 {
@@ -24,7 +24,6 @@ namespace BuyerAPI
             // Add services to the container.
             ConfigurationManager configurationManager = builder.Configuration;
 
-            ConnectionStringConstant.ConnectionString = configurationManager.GetSection("DbConnection:ConnectionString").Value;
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -73,7 +72,8 @@ namespace BuyerAPI
                                     ValidIssuer = tokenOptions.Issuer,
                                     ValidAudience = tokenOptions.Audience,
                                     ValidateIssuerSigningKey = true,
-                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+                                    IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
+                                    RoleClaimType = ClaimTypes.Role
                                 };
                             });
 
@@ -105,7 +105,9 @@ namespace BuyerAPI
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

@@ -2,9 +2,9 @@
 {
     public enum UserRoles
     {
-        Buyer,
-        Supplier,
-        Financial,
-        Admin
+        Buyer = 1,
+        Supplier = 2,
+        Financial = 3,
+        Admin = 4
     }
 }
