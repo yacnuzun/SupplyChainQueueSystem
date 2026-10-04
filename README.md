@@ -85,9 +85,14 @@
         git clone https://github.com/yacnuzun/SupplyChainQueueSystem.git
         cd SupplyChainQueueSystem
     ```
-2. Docker'ı Kurun:
+2. Ortam değişkenlerini hazırlayın (gizli değerler `.env` dosyasında tutulur, repoya eklenmez):
     ```bash
-        docker-compose up --build
+        cp .env.example .env
+    ```
+    `.env.example` yerel geliştirme için çalışan varsayılan değerlerle gelir. Mail gönderimi için isteğe bağlı olarak `EMAIL_SENDER` ve `EMAIL_APP_PASSWORD` alanlarını doldurabilirsiniz, boş bırakılırsa servisler çalışır ama e-posta gönderilmez.
+3. Servisleri ayağa kaldırın:
+    ```bash
+        docker compose up --build
     ```
 ---
 ## ✅ Özellikler
@@ -121,7 +126,7 @@
 
 - NotificationService, gelen mesajlara göre SMTP üzerinden e-posta gönderimi yapar.
 
-- MailKit kullanılmaktadır, appsettings.json üzerinden SMTP ayarları yapılabilir.
+- MailKit kullanılmaktadır, SMTP ayarları `.env` dosyasındaki `EMAIL_SENDER` ve `EMAIL_APP_PASSWORD` değerleriyle verilir (Gmail için uygulama şifresi kullanılmalıdır).
 
 ✅ Docker container eklendi (Commit: 58be5dd5, 2025-08-30)
 
@@ -150,14 +155,14 @@ Ayrıca `docker-compose.yml` ile tüm servisler aynı anda ayağa kaldırılabil
 
 ### Yapılan Düzenlemeler
 - `Dockerfile` → Her servis için publish edilen `.dll` dosyaları Kestrel üzerinde çalışacak şekilde yapılandırıldı.  
-- `docker-compose.yml` → RabbitMQ servisi ve mikroservisler aynı network üzerinde tanımlandı.  
+- `docker-compose.yml` → PostgreSQL, RabbitMQ ve mikroservisler aynı network üzerinde tanımlandı, servisler healthcheck ile sıralı başlar. Gizli değerler `.env` dosyasından okunur.  
 - `.dockerignore` → Gereksiz dosyaların (bin, obj, user secrets vb.) imaja dahil edilmesi engellendi.  
-- Kestrel URL ayarları güncellendi (örn: `http://+:5001`).  
+- Kestrel URL ayarları güncellendi (örn: `http://0.0.0.0:5001`).  
 
 ### Çalışan Servisler (docker-compose)
-- **AccountApi** → `http://localhost:5001`  
-- **BillApi** → `http://localhost:5002`  
-- **BuyerApi** → `http://localhost:5003`  
-- **FinancialApi** → `http://localhost:5004`  
-- **SupplierApi** → `http://localhost:5005`  
-- **RabbitMQ Management UI** → `http://localhost:15672` (user: guest / pass: guest)
+- **AccountApi** → `http://localhost:8081`  
+- **BillApi** → `http://localhost:8083`  
+- **BuyerApi** → `http://localhost:8084`  
+- **FinancialApi** → `http://localhost:8085`  
+- **SupplierApi** → `http://localhost:8086`  
+- **RabbitMQ Management UI** → `http://localhost:15672` (varsayılan: guest / guest, port ve kimlik bilgileri `.env` ile değiştirilebilir)
