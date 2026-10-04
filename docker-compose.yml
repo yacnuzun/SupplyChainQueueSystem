@@ -3,6 +3,8 @@
 
 x-app-env: &app-env
   ASPNETCORE_ENVIRONMENT: Development
+  # Konteynerde acilista EF Core migration'larini uygula (yerelde VS ile calistirirken kapali kalir)
+  Database__MigrateOnStartup: "true"
   TokenOptions__SecurityKey: ${JWT_SECURITY_KEY:?JWT_SECURITY_KEY .env dosyasinda tanimli olmali}
 
 x-mail-env: &mail-env

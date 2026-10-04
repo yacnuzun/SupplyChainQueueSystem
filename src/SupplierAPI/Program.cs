@@ -128,6 +128,15 @@ namespace SupplierAPI
 
             app.MapControllers();
 
+            // Apply EF Core migrations on startup (opt-in: Database:MigrateOnStartup=true, set in docker-compose)
+            if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+            {
+                using var migrationScope = app.Services.CreateScope();
+                var migrationDb = (Microsoft.EntityFrameworkCore.DbContext?)migrationScope.ServiceProvider.GetService(typeof(SupplierAPI.Infrastructure.DbConectionContext.SuplierDbContext))
+                                  ?? migrationScope.ServiceProvider.GetRequiredService<Microsoft.EntityFrameworkCore.DbContext>();
+                Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(migrationDb.Database);
+            }
+
             app.Run();
         }
     }
