@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, development ]
+  pull_request:
+    branches: [ master, development ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore MicrosevicesQueque.sln
+
+      - name: Build
+        run: dotnet build MicrosevicesQueque.sln --no-restore -c Release
+
+      - name: Test
+        run: dotnet test tests/AccountUnitTest/AccountUnitTest.csproj --no-build -c Release --verbosity normal
