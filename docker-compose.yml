@@ -1,3 +1,29 @@
+# Çalıştırmadan önce: cp .env.example .env
+# Gizli değerler .env dosyasından okunur, .env repoya eklenmez.
+
+x-app-env: &app-env
+  ASPNETCORE_ENVIRONMENT: Development
+  # Konteynerde acilista EF Core migration'larini uygula (yerelde VS ile calistirirken kapali kalir)
+  Database__MigrateOnStartup: "true"
+  TokenOptions__SecurityKey: ${JWT_SECURITY_KEY:?JWT_SECURITY_KEY .env dosyasinda tanimli olmali}
+
+x-mail-env: &mail-env
+  EmailSettings__SenderMail: ${EMAIL_SENDER:-}
+  EmailSettings__SmtpServer: smtp.gmail.com
+  EmailSettings__Port: "587"
+  EmailSettings__Password: ${EMAIL_APP_PASSWORD:-}
+
+x-rabbit-env: &rabbit-env
+  RabbitOptions__Url: amqp://rabbitmq:5672
+  RabbitOptions__User: ${RABBITMQ_USER:-guest}
+  RabbitOptions__Password: ${RABBITMQ_PASSWORD:-guest}
+
+x-depends: &depends
+  postgresdb:
+    condition: service_healthy
+  rabbitmq:
+    condition: service_healthy
+
 services:
   accountapi:
     build:
@@ -5,111 +31,107 @@ services:
       dockerfile: AccountApi/WebApi/Dockerfile
     ports:
       - "8081:5000"
-      - "8082:8080"
-    volumes:
-      - ./secret.json:/app/secret.json:ro
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - DbConnection__ConnectionString=Host=host.docker.internal;Port=5433;Database=userdb;Username=postgres;Password=123456
-      - EmailSettings__SenderMail=yalcin.zn96@gmail.com
-      - EmailSettings__SmtpServer=smtp.gmail.com
-      - EmailSettings__Port=587
-      - EmailSettings__Password=vucnphtdibpupcna
-      - RabbitOptions__Url=amqp://localhost:5672
-      - RabbitOptions__User=guest
-      - RabbitOptions__Password=guest
-      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      <<: [*app-env, *mail-env, *rabbit-env]
+      DbConnection__ConnectionString: Host=postgresdb;Port=5432;Database=userdb;Username=postgres;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env dosyasinda tanimli olmali}
+      ASPNETCORE_URLS: http://0.0.0.0:5000
+    depends_on: *depends
     networks:
       - micro_net
+
   billapi:
     build:
       context: ./src
       dockerfile: BillApi/WebApi/Dockerfile
     ports:
       - "8083:5001"
-    volumes:
-      - ./secret.json:/app/secret.json:ro
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - DbConnection__ConnectionString=Host=host.docker.internal;Port=5433;Database=billdb;Username=postgres;Password=123456
-      - ASPNETCORE_URLS=http://0.0.0.0:5001
+      <<: *app-env
+      DbConnection__ConnectionString: Host=postgresdb;Port=5432;Database=billdb;Username=postgres;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env dosyasinda tanimli olmali}
+      ASPNETCORE_URLS: http://0.0.0.0:5001
+    depends_on: *depends
     networks:
-      - micro_net    
+      - micro_net
+
   buyerapi:
     build:
       context: ./src
-      dockerfile: BuyerApi/WebApi/Dockerfile
+      dockerfile: BuyerAPI/WebApi/Dockerfile
     ports:
       - "8084:5002"
-    volumes:
-      - ./secret.json:/app/secret.json:ro
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - DbConnection__ConnectionString=Host=host.docker.internal;Port=5433;Database=buyerdb;Username=postgres;Password=123456
-      - EmailSettings__SenderMail=yalcin.zn96@gmail.com
-      - EmailSettings__SmtpServer=smtp.gmail.com
-      - EmailSettings__Port=587
-      - EmailSettings__Password=vucnphtdibpupcna
-      - RabbitOptions__Url=amqp://localhost:5672
-      - RabbitOptions__User=guest
-      - RabbitOptions__Password=guest
-      - ASPNETCORE_URLS=http://0.0.0.0:5002
+      <<: [*app-env, *mail-env, *rabbit-env]
+      DbConnection__ConnectionString: Host=postgresdb;Port=5432;Database=buyerdb;Username=postgres;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env dosyasinda tanimli olmali}
+      ASPNETCORE_URLS: http://0.0.0.0:5002
+    depends_on: *depends
     networks:
       - micro_net
+
   financialapi:
     build:
       context: ./src
-      dockerfile: FinancialApi/WebApi/Dockerfile
+      dockerfile: FinancialAPI/WebApi/Dockerfile
     ports:
       - "8085:8080"
-    volumes:
-      - ./secret.json:/app/secret.json:ro
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:8080
+      <<: *app-env
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+    depends_on: *depends
     networks:
       - micro_net
+
   supplierapi:
     build:
       context: ./src
-      dockerfile: SupplierApi/WebApi/Dockerfile
+      dockerfile: SupplierAPI/WebApi/Dockerfile
     ports:
       - "8086:5004"
-    volumes:
-      - ./secret.json:/app/secret.json:ro
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - DbConnection__ConnectionString=Host=host.docker.internal;Port=5433;Database=supplierdb;Username=postgres;Password=123456
-      - EmailSettings__SenderMail=yalcin.zn96@gmail.com
-      - EmailSettings__SmtpServer=smtp.gmail.com
-      - EmailSettings__Port=587
-      - EmailSettings__Password=vucnphtdibpupcna
-      - RabbitOptions__Url=amqp://localhost:5672
-      - RabbitOptions__User=guest
-      - RabbitOptions__Password=guest
-      - ASPNETCORE_URLS=http://0.0.0.0:5004
+      <<: [*app-env, *mail-env, *rabbit-env]
+      DbConnection__ConnectionString: Host=postgresdb;Port=5432;Database=supplierdb;Username=postgres;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env dosyasinda tanimli olmali}
+      ASPNETCORE_URLS: http://0.0.0.0:5004
+    depends_on: *depends
     networks:
       - micro_net
 
   postgresdb:
     image: postgres:15
     environment:
-      POSTGRES_MULTIPLE_DATABASES: userdb,billdb,buyerdb,supplierdb
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-    ports:
-      - "5432:5432"
-    networks:
-      - micro_net
- 
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env dosyasinda tanimli olmali}
+      POSTGRES_MULTIPLE_DATABASES: userdb,billdb,buyerdb,supplierdb
+    volumes:
+      - ./docker/postgres/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+      - pgdata:/var/lib/postgresql/data
+    # Host'tan baglanmak istersen yorumu kaldir (yerel Postgres ile cakismasin diye 5434):
+    # ports:
+    #   - "127.0.0.1:5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - micro_net
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - micro_net
+
+volumes:
+  pgdata:
 
 networks:
   micro_net:

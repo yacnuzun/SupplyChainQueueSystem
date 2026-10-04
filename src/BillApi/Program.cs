@@ -90,6 +90,15 @@ namespace BillApi
 
             app.MapControllers();
 
+            // Apply EF Core migrations on startup (opt-in: Database:MigrateOnStartup=true, set in docker-compose)
+            if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+            {
+                using var migrationScope = app.Services.CreateScope();
+                var migrationDb = (Microsoft.EntityFrameworkCore.DbContext?)migrationScope.ServiceProvider.GetService(typeof(BillApi.Infrastructure.Data.DbConnectionContext.BillDbContext))
+                                  ?? migrationScope.ServiceProvider.GetRequiredService<Microsoft.EntityFrameworkCore.DbContext>();
+                Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(migrationDb.Database);
+            }
+
             app.Run();
         }
     }

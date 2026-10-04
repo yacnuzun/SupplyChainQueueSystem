@@ -1,5 +1,7 @@
 # SupplyChainQueueSystem
 
+![CI](https://github.com/yacnuzun/SupplyChainQueueSystem/actions/workflows/ci.yml/badge.svg)
+
 **SupplyChainQueueSystem**, tedarik zinciri süreçleri gibi yüksek hacimli ve paralel işlem gerektiren senaryolarda mesaj tabanlı haberleşme sağlayan, .NET 8 ile geliştirilmiş mikroservis mimarisine sahip bir kuyruk yönetim sistemidir. RabbitMQ, Docker, Unit of Work ve Domain-Driven Design (DDD) prensipleriyle inşa edilmiştir.
 
 ## 🚀 Proje Amacı
@@ -18,6 +20,7 @@
 | .NET 8           | Temel backend framework                       |
 | RabbitMQ         | Mesajlaşma altyapısı                          |
 | Docker / Compose | Servis konteynerleştirme ve orkestrasyon      |
+| GitHub Actions   | CI: otomatik build ve test                    |
 | FluentValidation | DTO seviyesinde veri doğrulama                |
 | MailKit          | SMTP ile e-posta gönderimi                    |
 | Unit of Work     | Veri erişim yönetimi                          |
@@ -29,18 +32,22 @@
 ## 🧱 Proje Yapısı
 
 ```bash
-/MicroservicesQueue
+/SupplyChainQueueSystem
 │
+├── .github
+│ └── workflows
+│   └── ci.yml
 ├── src
 │ ├── AccountApi
 │ ├── BillApi
-│ ├── BuyerApi
-│ ├── FinancialApi
-│ ├── SharedLibraries
-│ └── SupplierApi
+│ ├── BuyerAPI
+│ ├── FinancialAPI
+│ ├── Shared
+│ └── SupplierAPI
 ├── tests
-│ ├── AccountUnitApi
+│ └── AccountUnitTest
 │
+├── MicrosevicesQueque.sln
 ├── docker-compose.yml
 └── README.md
 ```
@@ -51,7 +58,7 @@
     - **SupplierApi**: Tedarikçilerin erken ödeme talebi açmalarını sağlayan ve kuyruğu dinleyerek alınan faturaları bildiren servis.
 
 - 🔁 Ortak Bileşenler
-    - **SharedLibraries**: Mikroservisler arasında ortak kullanılan tüm yardımcı sınıfları içerir:
+    - **Shared**: Mikroservisler arasında ortak kullanılan tüm yardımcı sınıfları içerir:
 
       - **Interfaces**: Repository, Mail, Hashing gibi servis soyutlamaları.
 
@@ -75,12 +82,17 @@
 1. Repoyu klonlayın:
 
     ```bash
-        git clone https://github.com/kullanici-adi/MicroservicesQueue.git
-        cd MicroservicesQueue
+        git clone https://github.com/yacnuzun/SupplyChainQueueSystem.git
+        cd SupplyChainQueueSystem
     ```
-2. Docker'ı Kurun:
+2. Ortam değişkenlerini hazırlayın (gizli değerler `.env` dosyasında tutulur, repoya eklenmez):
     ```bash
-        docker-compose up --build
+        cp .env.example .env
+    ```
+    `.env.example` yerel geliştirme için çalışan varsayılan değerlerle gelir. Mail gönderimi için isteğe bağlı olarak `EMAIL_SENDER` ve `EMAIL_APP_PASSWORD` alanlarını doldurabilirsiniz, boş bırakılırsa servisler çalışır ama e-posta gönderilmez.
+3. Servisleri ayağa kaldırın:
+    ```bash
+        docker compose up --build
     ```
 ---
 ## ✅ Özellikler
@@ -88,7 +100,22 @@
 -  RabbitMQ Publisher / Consumer yapısı
 -  DTO validasyonları (FluentValidation)
 -  Unit of Work ve Generic Repository altyapısı
+-  JWT tabanlı kimlik doğrulama ve rol bazlı yetkilendirme (Admin, Buyer, Supplier)
 -  Temel test altyapısı (xUnit)
+-  GitHub Actions ile her push ve pull request'te otomatik build ve test (CI)
+---
+## 🔐 Authentication ve Yetkilendirme
+
+- **AccountApi** kullanıcı kaydı ve girişini yönetir, başarılı girişte **JWT** üretir. Şifreler hash ve salt ile saklanır.
+- Diğer servisler (BillApi, BuyerAPI, SupplierAPI) aynı token'ı doğrular. Doğrulama ayarları `Shared` kütüphanesindeki `TokenValidate` sınıfında ortaktır.
+- Yetkilendirme `[Authorize(Roles = ...)]` attribute'larıyla rol bazlı yapılır:
+
+| Rol | Erişebildiği alanlar |
+|---|---|
+| **Admin** | Claim yönetimi ve mail şablonu yönetimi uçları (AccountApi) |
+| **Buyer** | Alıcıya ait uçlar (BuyerAPI) ve fatura işlemlerinin alıcı tarafı (BillApi) |
+| **Supplier** | Tedarikçiye ait uçlar (SupplierAPI) ve fatura işlemlerinin tedarikçi tarafı (BillApi) |
+
 ---
 ## 🧪 Testler
 
@@ -99,7 +126,7 @@
 
 - NotificationService, gelen mesajlara göre SMTP üzerinden e-posta gönderimi yapar.
 
-- MailKit kullanılmaktadır, appsettings.json üzerinden SMTP ayarları yapılabilir.
+- MailKit kullanılmaktadır, SMTP ayarları `.env` dosyasındaki `EMAIL_SENDER` ve `EMAIL_APP_PASSWORD` değerleriyle verilir (Gmail için uygulama şifresi kullanılmalıdır).
 
 ✅ Docker container eklendi (Commit: 58be5dd5, 2025-08-30)
 
@@ -116,8 +143,9 @@ Gelecek adımlar aşağıdaki gibi planlanmıştır:
 - [x] Mikroservis yapısının kurulması  
 - [x] RabbitMQ entegrasyonu  
 - [x] Dockerfile ve docker-compose yapılandırmaları  
-- [ ] Authentication (JWT + role-based authorization)  
-- [ ] CI/CD pipeline entegrasyonu  
+- [x] CI pipeline (GitHub Actions: build + test)  
+- [x] Authentication (JWT + role-based authorization)  
+- [ ] CD pipeline (deployment)  
 - [ ] Test coverage oranının artırılması 
 
 ## 🐳 Docker Teknik Detayları
@@ -127,15 +155,14 @@ Ayrıca `docker-compose.yml` ile tüm servisler aynı anda ayağa kaldırılabil
 
 ### Yapılan Düzenlemeler
 - `Dockerfile` → Her servis için publish edilen `.dll` dosyaları Kestrel üzerinde çalışacak şekilde yapılandırıldı.  
-- `docker-compose.yml` → RabbitMQ servisi ve mikroservisler aynı network üzerinde tanımlandı.  
+- `docker-compose.yml` → PostgreSQL, RabbitMQ ve mikroservisler aynı network üzerinde tanımlandı, servisler healthcheck ile sıralı başlar. Gizli değerler `.env` dosyasından okunur.  
 - `.dockerignore` → Gereksiz dosyaların (bin, obj, user secrets vb.) imaja dahil edilmesi engellendi.  
-- Kestrel URL ayarları güncellendi (örn: `http://+:5001`).  
+- Kestrel URL ayarları güncellendi (örn: `http://0.0.0.0:5001`).  
 
 ### Çalışan Servisler (docker-compose)
-- **AccountApi** → `http://localhost:5001`  
-- **BillApi** → `http://localhost:5002`  
-- **BuyerApi** → `http://localhost:5003`  
-- **FinancialApi** → `http://localhost:5004`  
-- **SupplierApi** → `http://localhost:5005`  
-- **RabbitMQ Management UI** → `http://localhost:15672` (user: guest / pass: guest)  
-
+- **AccountApi** → `http://localhost:8081`  
+- **BillApi** → `http://localhost:8083`  
+- **BuyerApi** → `http://localhost:8084`  
+- **FinancialApi** → `http://localhost:8085`  
+- **SupplierApi** → `http://localhost:8086`  
+- **RabbitMQ Management UI** → `http://localhost:15672` (varsayılan: guest / guest, port ve kimlik bilgileri `.env` ile değiştirilebilir)
