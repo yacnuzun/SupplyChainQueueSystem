@@ -108,6 +108,27 @@ namespace AccountApi
                 var migrationDb = (Microsoft.EntityFrameworkCore.DbContext?)migrationScope.ServiceProvider.GetService(typeof(AccountApi.Infrastructure.Data.AccountDbContext))
                                   ?? migrationScope.ServiceProvider.GetRequiredService<Microsoft.EntityFrameworkCore.DbContext>();
                 Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(migrationDb.Database);
+
+                // Seed default roles (idempotent). Registration assigns a role by name, and
+                // [Authorize(Roles = ...)] checks it, so these must exist on a fresh database.
+                if (migrationDb is AccountApi.Infrastructure.Data.AccountDbContext seedDb)
+                {
+                    var defaultRoles = new[]
+                    {
+                        AccountApi.Domain.Enums.UserRolesConst.Admin,
+                        AccountApi.Domain.Enums.UserRolesConst.Buyer,
+                        AccountApi.Domain.Enums.UserRolesConst.Supplier,
+                        AccountApi.Domain.Enums.UserRolesConst.Financial
+                    };
+                    foreach (var roleName in defaultRoles)
+                    {
+                        if (!seedDb.OperationClaims.Any(c => c.Name == roleName))
+                        {
+                            seedDb.OperationClaims.Add(new AccountApi.Domain.Entities.OperationClaim { Name = roleName });
+                        }
+                    }
+                    seedDb.SaveChanges();
+                }
             }
 
             app.Run();
